@@ -3,9 +3,13 @@
 'use strict';
 
 /**
+ * Config
+ */
+const URL = 'http://image.baidu.com/channel/listjson?pn=0&rn=30&tag1=%E7%BE%8E%E5%A5%B3&tag2=%E5%85%A8%E9%83%A8&ie=utf8'
+
+/**
  * Dependencies
  */
-
 var tempfile = require('tempfile');
 var shuffle = require('array-shuffle');
 var isIterm = require('is-iterm');
@@ -53,12 +57,15 @@ function npm (args) {
 }
 
 function findImages () {
-	return got('http://api.giphy.com/v1/gifs/trending', {
-		json: true,
-		query: {
-			api_key: 'dc6zaTOxFJmzC'
-		}
-	});
+	// return got('http://api.giphy.com/v1/gifs/trending', {
+	// 	json: true,
+	// 	query: {
+	// 		api_key: 'dc6zaTOxFJmzC'
+	// 	}
+	// });
+	return got(URL, {
+		json: true
+	})
 }
 
 function showImage (url, done) {
@@ -87,14 +94,7 @@ function showImage (url, done) {
 }
 
 function displayImages (res) {
-	var images = res.body.data
-		.filter(function (image) {
-			return image.images.original.height <= 400;
-		})
-		.map(function (image) {
-			return image.images.original.url;
-		});
-
+	const images = res.body.data.filter(image => images.image_height <= 400).map(image => image.image_url)
 	each(shuffle(images), function (url, i, done) {
 		showImage(url, function () {
 			setTimeout(done, 5000);
