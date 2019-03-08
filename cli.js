@@ -19,6 +19,7 @@ var join = require('path').join;
 var open = require('opn');
 var got = require('got');
 var fs = require('fs');
+var clear = require('clear')
 
 var imgcat = join(__dirname, 'node_modules', '.bin', 'imgcat');
 
@@ -28,6 +29,7 @@ var imgcat = join(__dirname, 'node_modules', '.bin', 'imgcat');
  */
 
 var args = process.argv.slice(2);
+let ts = Date.now()
 var ps = npm(args);
 var gif;
 
@@ -46,23 +48,17 @@ if (isInstall(args)) {
 }
 
 function isInstall (args) {
-	return args[0] === 'i' || args[0] === 'install';
+	return args[0] === 'i' || args[0] === 'install' || args[0] === 'add';
 }
 
 function npm (args) {
-	return spawn('npm', args, {
+	return spawn('yarn', args, {
 		cwd: process.cwd(),
 		stdio: isInstall(args) ? 'ignore' : 'inherit'
 	});
 }
 
 function findImages () {
-	// return got('http://api.giphy.com/v1/gifs/trending', {
-	// 	json: true,
-	// 	query: {
-	// 		api_key: 'dc6zaTOxFJmzC'
-	// 	}
-	// });
 	return got(URL, {
 		json: true
 	})
@@ -74,30 +70,30 @@ function showImage (url, done) {
 		done();
 		return;
 	}
-
 	var path = tempfile();
 	var image = fs.createWriteStream(path);
 
 	image.on('finish', function () {
-		gif = spawn(imgcat, [path], {
+		gif = require('child_process').spawn(imgcat, [path], {
 			cwd: process.cwd()
 		});
-
+		clear()
+		console.log('-----------------------')
+		console.log(`⌚️ ${((Date.now() - ts) /1000).toFixed(2)} s\n`)
 		gif.stdout.on('data', function (data) {
 			process.stdout.write(data);
 		});
-
-		done();
+		done()
 	});
 
 	got.stream(url).pipe(image);
 }
 
 function displayImages (res) {
-	const images = res.body.data.filter(image => images.image_height <= 400).map(image => image.image_url)
+	const images = res.body.data.map(image => image.download_url || image.image_url).filter(Boolean)
 	each(shuffle(images), function (url, i, done) {
 		showImage(url, function () {
-			setTimeout(done, 5000);
+			setTimeout(done, 2000);
 		});
 	});
 }

@@ -9,12 +9,14 @@
     "email": "vdemedes@gmail.com",
     "url": "https://github.com/vdemedes"
   },
+  "main": "cli.js",
   "files": [
     "cli.js"
   ],
   "bin": "cli.js",
   "dependencies": {
     "array-shuffle": "^1.0.0",
+    "clear": "^0.1.0",
     "cross-spawn-async": "^2.1.9",
     "each-series": "^1.0.0",
     "got": "^5.5.0",
