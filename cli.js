@@ -48,7 +48,7 @@ if (isInstall(args)) {
 }
 
 function isInstall (args) {
-	return args[0] === 'i' || args[0] === 'install' || args[0] === 'add';
+	return !args[0] || args[0] === 'i' || args[0] === 'install' || args[0] === 'add';
 }
 
 function npm (args) {
